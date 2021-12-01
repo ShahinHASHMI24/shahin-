@@ -48,7 +48,19 @@ Bugfixes
 
 - tls-crypt-v2: abort connection if client-key is too short
 
+<<<<<<< HEAD
 - make man page agree with actual code on replay-window backtrag log message
+=======
+Optional ciphers in ``--data-ciphers``
+    Ciphers in ``--data-ciphers`` can now be prefixed with a ``?`` to mark
+    those as optional and only use them if the SSL library supports them.
+
+Deprecated features
+-------------------
+``inetd`` has been removed
+    This was a very limited and not-well-tested way to run OpenVPN, on TCP
+    and TAP mode only.
+>>>>>>> 766044507 (Implement optional cipher in --data-ciphers prefixed with ?)
 
 - remove useless empty line from CR_RESPONSE message
 
