@@ -2800,7 +2800,7 @@ do_init_crypto_static(struct context *c, const unsigned int flags)
                                 options->shared_secret_file,
                                 options->shared_secret_file_inline,
                                 options->key_direction, "Static Key Encryption",
-                                "secret");
+                                "secret", NULL);
     }
     else
     {
@@ -2840,13 +2840,15 @@ do_init_tls_wrap_key(struct context *c)
                                 options->ce.tls_auth_file,
                                 options->ce.tls_auth_file_inline,
                                 options->ce.key_direction,
-                                "Control Channel Authentication", "tls-auth");
+                                "Control Channel Authentication", "tls-auth",
+                                NULL);
     }
 
     /* TLS handshake encryption+authentication (--tls-crypt) */
     if (options->ce.tls_crypt_file)
     {
         tls_crypt_init_key(&c->c1.ks.tls_wrap_key,
+                           &c->c1.ks.original_tlscrypt_keydata,
                            options->ce.tls_crypt_file,
                            options->ce.tls_crypt_file_inline,
                            options->tls_server);
@@ -2864,6 +2866,7 @@ do_init_tls_wrap_key(struct context *c)
         else
         {
             tls_crypt_v2_init_client_key(&c->c1.ks.tls_wrap_key,
+                                         &c->c1.ks.original_tlscrypt_keydata,
                                          &c->c1.ks.tls_crypt_v2_wkc,
                                          options->ce.tls_crypt_v2_file,
                                          options->ce.tls_crypt_v2_file_inline);
@@ -3181,6 +3184,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
         to.tls_wrap.opt.key_ctx_bi = c->c1.ks.tls_wrap_key;
         to.tls_wrap.opt.pid_persist = &c->c1.pid_persist;
         to.tls_wrap.opt.flags |= CO_PACKET_ID_LONG_FORM;
+        to.tls_wrap.original_tlscrypt_keydata = c->c1.ks.original_tlscrypt_keydata;
 
         if (options->ce.tls_crypt_v2_file)
         {

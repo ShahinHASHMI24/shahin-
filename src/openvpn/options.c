@@ -8605,6 +8605,10 @@ add_option(struct options *options,
             {
                 options->imported_protocol_flags |= CO_USE_TLS_KEY_MATERIAL_EXPORT;
             }
+            else if (streq(p[j], "secure-reneg"))
+            {
+                options->imported_protocol_flags |= CO_USE_SECURE_RENEGOTIATION;
+            }
 #endif
             else
             {
