@@ -448,7 +448,7 @@ dco_p2p_add_new_peer(struct context *c)
     }
 
     c->c2.tls_multi->dco_peer_added = true;
-    c->c2.link_socket->info.dco_installed = true;
+    c->c2.link_socket->info.lsa->actual.dco_installed = true;
 
     return 0;
 }
@@ -522,7 +522,7 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
 {
     struct context *c = &mi->context;
 
-    int peer_id = mi->context.c2.tls_multi->peer_id;
+    int peer_id = c->c2.tls_multi->peer_id;
     struct sockaddr *remoteaddr, *localaddr = NULL;
     struct sockaddr_storage local = { 0 };
     int sd = c->c2.link_socket->sd;
@@ -531,6 +531,7 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
     {
         /* the remote address will be inferred from the TCP socket endpoint */
         remoteaddr = NULL;
+        c->c2.link_socket->info.lsa->actual.dco_installed = true;
     }
     else
     {
@@ -575,7 +576,7 @@ dco_multi_add_new_peer(struct multi_context *m, struct multi_instance *mi)
         {
             msg(D_DCO|M_ERRNO, "error closing TCP socket after DCO handover");
         }
-        c->c2.link_socket->info.dco_installed = true;
+        c->c2.link_socket->info.lsa->actual.dco_installed = true;
         c->c2.link_socket->sd = SOCKET_UNDEFINED;
     }
 
