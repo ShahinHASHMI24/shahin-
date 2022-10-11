@@ -2448,14 +2448,14 @@ multi_client_connect_late_setup(struct multi_context *m,
             if (mi->context.options.ping_send_timeout || mi->context.c2.frame.mss_fix)
             {
                 int ret = dco_set_peer(&mi->context.c1.tuntap->dco,
-                                       mi->context.c2.tls_multi->peer_id,
+                                       mi->context.c2.tls_multi->dco_peer_id,
                                        mi->context.options.ping_send_timeout,
                                        mi->context.options.ping_rec_timeout,
                                        mi->context.c2.frame.mss_fix);
                 if (ret < 0)
                 {
                     msg(D_DCO, "Cannot set parameters for DCO peer (id=%u): %s",
-                        mi->context.c2.tls_multi->peer_id, strerror(-ret));
+                        mi->context.c2.tls_multi->dco_peer_id, strerror(-ret));
                     mi->context.c2.tls_multi->multi_state = CAS_FAILED;
                 }
             }
@@ -3226,8 +3226,8 @@ process_incoming_del_peer(struct multi_context *m, struct multi_instance *mi,
     }
 
     /* When kernel already deleted the peer, the socket is no longer
-     * installed and we don't need to cleanup the state in the kernel */
-    mi->context.c2.tls_multi->dco_peer_added = false;
+     * installed, and we do not need to clean up the state in the kernel */
+    mi->context.c2.tls_multi->dco_peer_id = -1;
     mi->context.sig->signal_text = reason;
     multi_signal_instance(m, mi, SIGTERM);
 }
