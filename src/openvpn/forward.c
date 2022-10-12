@@ -151,6 +151,13 @@ check_dco_key_status(struct context *c)
         return;
     }
 
+    /* If the DCO peer id changed, we need to readd the peer */
+    if (c->c2.tls_multi->dco_peer_id != -1
+        && c->c2.tls_multi->peer_id != c->c2.tls_multi->dco_peer_id)
+    {
+        dco_p2p_add_new_peer(c);
+    }
+
     dco_update_keys(&c->c1.tuntap->dco, c->c2.tls_multi);
 }
 
@@ -196,9 +203,15 @@ check_tls(struct context *c)
 
     interval_schedule_wakeup(&c->c2.tmp_int, &wakeup);
 
-    /* Our current code has no good hooks in the TLS machinery to update
+    /*
+     * Our current code has no good hooks in the TLS machinery to update
      * DCO keys. So we check the key status after the whole TLS machinery
      * has been completed and potentially update them
+     *
+     * We have a hidden state transition from secondary to primary key based
+     * on ks->auth_deferred_expire that DCO needs to check that the normal
+     * TLS state engine does not check. So we call the doc check even if
+     * tmp_status does not indicate that something has changed.
      */
     check_dco_key_status(c);
 
